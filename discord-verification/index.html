@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Discord Verification</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    input { margin: 5px; padding: 5px; }
+    button { margin: 5px; padding: 5px 10px; }
+    .captcha-box { margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h2>Discord Verification</h2>
+
+  <!-- Username -->
+  <input id="username" placeholder="Enter Discord username"><br>
+
+  <!-- Captcha 1: Math -->
+  <div class="captcha-box">
+    <span id="mathQuestion"></span>
+    <button onclick="generateMathCaptcha()">↻</button><br>
+    <input id="mathAnswer" placeholder="Answer math captcha">
+  </div>
+
+  <!-- Captcha 2: Random string -->
+  <div class="captcha-box">
+    <span id="stringCaptcha"></span>
+    <button onclick="generateStringCaptcha()">↻</button><br>
+    <input id="stringAnswer" placeholder="Type the string above">
+  </div>
+
+  <!-- Verify -->
+  <button id="verify">Verify</button>
+
+  <script>
+    let correctMath = null;
+    let correctString = "";
+
+    // Generate random math captcha
+    function generateMathCaptcha() {
+      const nums = Array.from({length: 4}, () => Math.floor(Math.random() * 10) + 1);
+      const ops = ["+", "-", "*", "/"];
+      const shuffled = ops.sort(() => 0.5 - Math.random()); // shuffle operators
+
+      const expr = `${nums[0]} ${shuffled[0]} ${nums[1]} ${shuffled[1]} ${nums[2]} ${shuffled[2]} ${nums[3]}`;
+      document.getElementById("mathQuestion").textContent = expr;
+
+      try {
+        correctMath = Math.floor(Function(`"use strict";return (${expr})`)()); // eval safely
+      } catch {
+        correctMath = null;
+      }
+    }
+
+    // Generate random string captcha
+    function generateStringCaptcha() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      correctString = Array.from({length: 15}, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+      document.getElementById("stringCaptcha").textContent = correctString;
+    }
+
+    // Initial captcha load
+    generateMathCaptcha();
+    generateStringCaptcha();
+
+    // Verify button click
+    document.getElementById("verify").addEventListener("click", async () => {
+      const username = document.getElementById("username").value.trim();
+      const mathAns = parseInt(document.getElementById("mathAnswer").value.trim());
+      const stringAns = document.getElementById("stringAnswer").value.trim();
+
+      if (!username) {
+        alert("Please enter a username.");
+        return;
+      }
+      if (mathAns !== correctMath) {
+        alert("Math captcha incorrect.");
+        return;
+      }
+      if (stringAns !== correctString) {
+        alert("String captcha incorrect.");
+        return;
+      }
+
+      // Send to backend API
+      const res = await fetch("/api/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
+
+      if (res.ok) {
+        alert("Verification sent!");
+      } else {
+        alert("Something went wrong.");
+      }
+    });
+  </script>
+</body>
+</html>
