@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const webhookUrl = process.env.DISCORD_WEBHOOK; // secret in Vercel
 
   const payload = {
-    content: `User **${username}** has verified! Please add role 'Verified' <@&1409755182132105266>`, 
+    content: `User @${username} has verified! Please add role 'Verified' <@&1409755182132105266>`, 
     allowed_mentions: {
       parse: ["roles"] // 👈 allow role mentions
     }
@@ -19,3 +19,4 @@ export default async function handler(req, res) {
 
   res.status(200).json({ success: true });
 }
+
