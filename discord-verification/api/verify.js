@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     }
 
     const payload = {
-      content: `User <@${userId}> (**${username}**) has verified! Please add role 'Verified' (<@&1410199444464472147>), <@&1409755182132105266>!`
+      content: `User **${username}** (use ***search bar*** or ***member list*** to check the user) has verified! Please add role 'Verified' (<@&1410199444464472147>), <@&1409755182132105266>!`
     };
 
     const response = await fetch(webhookUrl, {
@@ -35,4 +35,5 @@ export default async function handler(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
+
 
