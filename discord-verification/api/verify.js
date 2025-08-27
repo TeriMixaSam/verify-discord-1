@@ -7,7 +7,9 @@ export default async function handler(req, res) {
   const payload = {
     content: `User @${username} has verified! Please add role 'Verified' <@&1409755182132105266>`, 
     allowed_mentions: {
-      parse: ["roles"] // 👈 allow role mentions
+      parse: ["roles"], // 👈 allow role mentions
+      parse: ["users"], 
+      users: [userId] // 👈 explicitly allow pinging THIS user
     }
   };
 
@@ -19,4 +21,5 @@ export default async function handler(req, res) {
 
   res.status(200).json({ success: true });
 }
+
 
